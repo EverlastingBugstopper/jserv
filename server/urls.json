@@ -1,3 +1,11 @@
 {
-  "data": "hello world"
+	"format": "1",
+	"operations": {
+		"universal-query": {
+			"body": "query { __typename }"
+		},
+		"named-universal-query": {
+			"body": "query UniversalQuery { __typename }"
+		}
+	}
 }
