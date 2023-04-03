@@ -1,6 +1,6 @@
 {
 	"name": "jserv",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A development server for a single JSON file",
 	"main": "index.js",
 	"bin": "index.js",
@@ -12,8 +12,7 @@
 	"author": "Avery Harnish <avery@apollographql.com>",
 	"license": "MIT",
 	"dependencies": {
-		"commander": "^10.0.0",
-		"node-static": "^0.7.11"
+		"commander": "^10.0.0"
 	},
 	"devDependencies": {
 		"prettier": "^2.8.7"
