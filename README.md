@@ -1,9 +1,15 @@
 # `jserv`
 
-This is a small wrapper around [`node-static`](https://npmjs.com/package/node-static) that allows you to serve a single JSON endpoint from a server. This is most useful when developing features that require a JSON server and you want to test its behavior.
+`jserv` is a development server for a single JSON file.
 
 ## Usage
 
 **Serve a single json file from all endpoints:**
 
 `npx jserv ./data.json`
+
+Changes made to the file will be reloaded and served.
+
+**Customize the host/port of the server:**
+
+`npx jserv --port 4000 --host localhost ./data.json`

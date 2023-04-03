@@ -1,6 +1,6 @@
 {
 	"name": "jserv",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "A development server for a single JSON file",
 	"main": "index.js",
 	"bin": "index.js",
