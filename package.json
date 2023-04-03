@@ -1,8 +1,9 @@
 {
 	"name": "jserv",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A development server for a single JSON file",
 	"main": "index.js",
+	"bin": "index.js",
 	"scripts": {
 		"start": "node ./index.js",
 		"format": "prettier --write ./"
