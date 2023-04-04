@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { program } = require("commander");
+const lineColumn = require("line-column");
 const { name, version, description } = require("./package.json");
 const http = require("http");
 const fs = require("fs");
@@ -14,11 +15,11 @@ function bail(message) {
 }
 
 function printError(message) {
-	console.error(`error: ${message}`);
+	console.error(`✖️ error: ${message}`);
 }
 
-function withContext(message, error) {
-	return `${message}\n  caused by: ${error}`;
+function withContext(message, causedBy) {
+	return `${message}\n  ☞ ${causedBy.message}`;
 }
 
 // let's have some fun with go style error handling because i don't know what i'm doing
@@ -29,7 +30,31 @@ function getJsonFromPath(path) {
 		try {
 			return [JSON.stringify(JSON.parse(contents)), null];
 		} catch (e) {
-			return [null, withContext(`file "${path}" is not valid JSON`, e)];
+			let message = `file "${path}" is not valid JSON`;
+
+			let maybeFilePosition = e.message.split("position ");
+
+			if (maybeFilePosition.length == 2) {
+				let filePosition = maybeFilePosition[1];
+				const calculatedLineColumn =
+					lineColumn(contents).fromIndex(filePosition);
+				if (
+					calculatedLineColumn !== null &&
+					calculatedLineColumn !== undefined
+				) {
+					const { line, col } = calculatedLineColumn;
+					if (
+						line !== null &&
+						line !== undefined &&
+						col !== null &&
+						col !== undefined
+					) {
+						message = `invalid JSON at ${path}:${line}:${col}`;
+					}
+				}
+			}
+
+			return [null, withContext(message, e)];
 		}
 	} catch (e) {
 		return [null, withContext(`could not read file "${path}"`, e)];
@@ -68,8 +93,8 @@ program
 					}
 				})
 				.listen(options.port, options.host);
-			console.log(`serving ${jsonPath} at all endpoints under ${endpoint}`);
-			console.log(`watching ${jsonPath} for changes...`);
+			console.log(`${jsonPath} is available at ${endpoint}`);
+			console.log(`watching JSON file for changes...`);
 			fs.watch(jsonPath, { encoding: "utf8" }, (event, filename) => {
 				let [reloadedJson, reloadedError] = getJsonFromPath(jsonPath);
 
@@ -78,18 +103,13 @@ program
 				if (reloadedError !== null && reloadedError !== serverError) {
 					json = null;
 					serverError = reloadedError;
-					printError(
-						withContext(
-							`the change to ${jsonPath} was not valid`,
-							reloadedError
-						)
-					);
+					printError(reloadedError);
 					// if the new path is valid JSON and it's not the same JSON as before
 					// clear out the server errors, start returning the new JSON, and print that the change has been applied
 				} else if (reloadedJson !== null && reloadedJson !== json) {
 					json = reloadedJson;
 					serverError = null;
-					console.log(`applied changes to "${jsonPath}" to the server`);
+					console.log("✔️ JSON reloaded");
 				} else if (reloadedJson === null && reloadedError === null) {
 					// the above states should have handled all possible occurrences
 					// if we don't have a good response, something went wrong
