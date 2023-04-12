@@ -1,7 +1,11 @@
 {
 	"name": "jserv",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "A development server for a single JSON file",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/EverlastingBugstopper/jserv"
+	},
 	"main": "index.js",
 	"bin": "index.js",
 	"scripts": {
